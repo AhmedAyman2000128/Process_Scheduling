@@ -14,8 +14,6 @@ import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -24,7 +22,6 @@ import javafx.util.Duration;
 import java.net.URL;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class Controller implements Initializable {
     @FXML
@@ -51,6 +48,7 @@ public class Controller implements Initializable {
     }
     @FXML
     private ChoiceBox<String> schedular;
+    private final String SCHEDULAR_DEFAULT = "Algorithm";
     @FXML
     private TableColumn<Process, Integer> arrivalCol;
     @FXML
@@ -76,47 +74,76 @@ public class Controller implements Initializable {
     private TableView processTable;
     static int k = 0;// for timeline
     static int PROCESSCOUNT = 4;
+    // Indicate whether adding processes while running or at the beginning
+    boolean liveFlag = false;
+    private Integer timeQuantum = null;
+    //to provide color to the process entered
+    private static int processIndex = 0;
 
     @FXML
     void showChart(ActionEvent event) {
-        XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
-        chart.getData().add(series1);
-        KeyFrame keyFrame;
-        keyFrame = new KeyFrame(Duration.seconds(1), e -> {
-            if(processes.get(k).getRemainingTime()>0){
-                XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
-                series1.getData().add(data);
-                series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", processes.get(k).getColor()));
-                Process process = (Process) processTable.getItems().get(k);
-                process.setRemainingTime(process.getRemainingTime() - 1);
-                processTable.refresh();
+        if(processes != null && processes.size()!=0){
+            liveFlag = true;
+            XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
+            chart.getData().add(series1);
+            KeyFrame keyFrame;
+            keyFrame = new KeyFrame(Duration.seconds(1), e -> {
+                if(processes.get(k).getRemainingTime()>0){
+                    XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
+                    series1.getData().add(data);
+                    series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", processes.get(k).getColor()));
+                    Process process = (Process) processTable.getItems().get(k);
+                    process.setRemainingTime(process.getRemainingTime() - 1);
+                    processTable.refresh();
                 }
-            if(processes.get(k).getRemainingTime() == 0)
-                k++;
-            if(k==processes.size()){
-                k=0;
-                timeline.stop();
-            }
-        });
-        // Create a Timeline and add the KeyFrame
-        timeline = new Timeline(keyFrame);
-        // Set the cycle count to 1 (play the timeline once)
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        // Start the timeline
-        timeline.play();
+                if(processes.get(k).getRemainingTime() == 0)
+                    k++;
+                if(k==processes.size()){
+                    k=0;
+                    timeline.stop();
+                }
+            });
+            // Create a Timeline and add the KeyFrame
+            timeline = new Timeline(keyFrame);
+            // Set the cycle count to 1 (play the timeline once)
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            // Start the timeline
+            timeline.play();
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,"Please insert processes first");
+            alert.setTitle("No processes error");
+            alert.show();
+        }
     }
 
     @FXML
     void addProcess(ActionEvent event) {
+        String schedularValue = schedular.getValue().toString();
+        if(schedularValue.equals(SCHEDULAR_DEFAULT)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,"please choose Scheduling Algorithm");
+            alert.setTitle("Error");
+            alert.show();
+        }
+        else{
+            if(schedularValue.equals(schedularAlgorithm.FCFS.toString())
+                    || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
+                    || schedularValue.equals(schedularAlgorithm.SJF_NonPreemptive.toString())){
 
+
+            }
+        }
     }
 
     @FXML
     void resetState(ActionEvent event) {
         processes.clear();
+        schedular.setValue(SCHEDULAR_DEFAULT);
         schedular.setDisable(false);
         disableAll();
         processTable.refresh();
+        liveFlag = false;
+        timeQuantum = null;
     }
 
     @FXML
@@ -149,6 +176,7 @@ public class Controller implements Initializable {
             double hue = (i * goldenRatioConjugate) % 1.0;
             colors.add(Color.hsb(hue * 360, saturation, brightness));
         }
+        colors = colors.reversed();
         processes = FXCollections.observableArrayList(
                 new Process("P1",0,2,1,colors.get(0)),
                 new Process("P2",0,3,1,colors.get(1)),
@@ -174,27 +202,15 @@ public class Controller implements Initializable {
                 };
             }
         });
-        remCol.setCellValueFactory(
-                new PropertyValueFactory<Process,Integer>("RemainingTime")
-        );
-        arrivalCol.setCellValueFactory(
-                new PropertyValueFactory<Process,Integer>("Arrival")
-        );
-        processCol.setCellValueFactory(
-                new PropertyValueFactory<Process,String>("Name")
-        );
-        cpuBurstCol.setCellValueFactory(
-                new PropertyValueFactory<Process,Integer>("CpuBurst")
-        );
-        priorityCol.setCellValueFactory(
-                new PropertyValueFactory<Process,Integer>("Priority")
-        );
+        remCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("RemainingTime"));
+        arrivalCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Arrival"));
+        processCol.setCellValueFactory(new PropertyValueFactory<Process,String>("Name"));
+        cpuBurstCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("CpuBurst"));
+        priorityCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Priority"));
         processTable.setItems(processes);
-        //System.out.println(colors);
-
-
 
         /////////////////Schedular Choice Box////////////////////////
+        schedular.setValue(SCHEDULAR_DEFAULT);
         disableAll();
         schedular.getItems().addAll(schedularAlgorithm.FCFS.toString(),
                                     schedularAlgorithm.SJF_Preemptive.toString(),
@@ -238,17 +254,31 @@ public class Controller implements Initializable {
         });
 
     }
-    private final void enableAll(){
+    private void enableAll(){
         priorityText.setDisable(false);
         quantumText.setDisable(false);
         cpuBurstText.setDisable(false);
         arrivalText.setDisable(false);
     }
-    private final void disableAll(){
+    private void disableAll(){
         priorityText.setDisable(true);
         quantumText.setDisable(true);
         cpuBurstText.setDisable(true);
         arrivalText.setDisable(true);
     }
-
+    private boolean isValidInputForFCFS_SJF(){
+        String  arrival= arrivalText.getText();
+        String burst = cpuBurstText.getText();
+        if(arrival.isEmpty() || burst.isEmpty()){
+            return false;
+        }
+        return true;
+    }
+    private boolean isValidInputForPriority(){
+        String priority = priorityText.getText();
+        return (isValidInputForFCFS_SJF() && !priority.isEmpty());
+    }
+    private boolean isValidInputForRoundRobin(){
+        return isValidInputForFCFS_SJF();
+    }
 }
