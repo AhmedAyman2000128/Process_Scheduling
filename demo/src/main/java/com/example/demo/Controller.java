@@ -12,10 +12,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,6 +27,20 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Controller implements Initializable {
+    @FXML
+    private Button addBtn;
+    @FXML
+    private TextField arrivalText;
+    @FXML
+    private Button resetBtn;
+    @FXML
+    private TextField cpuBurstText;
+    @FXML
+    private TextField priorityText;
+    @FXML
+    private TextField quantumText;
+    @FXML
+    private Button removeBtn;
     enum schedularAlgorithm {
         FCFS,
         SJF_Preemptive,
@@ -82,7 +93,7 @@ public class Controller implements Initializable {
                 }
             if(processes.get(k).getRemainingTime() == 0)
                 k++;
-            if(k==PROCESSCOUNT){
+            if(k==processes.size()){
                 k=0;
                 timeline.stop();
             }
@@ -94,6 +105,38 @@ public class Controller implements Initializable {
         // Start the timeline
         timeline.play();
     }
+
+    @FXML
+    void addProcess(ActionEvent event) {
+
+    }
+
+    @FXML
+    void resetState(ActionEvent event) {
+        processes.clear();
+        schedular.setDisable(false);
+        disableAll();
+        processTable.refresh();
+    }
+
+    @FXML
+    void removeProcess(ActionEvent event) {
+        Process selectedItem = (Process) processTable.getSelectionModel().getSelectedItem();
+        if(selectedItem == null){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,"You have to select item from the Table !");
+            alert.setTitle("Wrong Operation");
+            alert.show();
+        }
+        else{
+            processTable.getItems().remove(selectedItem);
+            processes=(ObservableList<Process>)processTable.getItems();
+            System.out.println();
+            for(int i=0;i<processes.size();i++){
+                System.out.println(processes.get(i).getName());
+            }
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         chart.setCategoryGap(100);
@@ -148,6 +191,11 @@ public class Controller implements Initializable {
         );
         processTable.setItems(processes);
         //System.out.println(colors);
+
+
+
+        /////////////////Schedular Choice Box////////////////////////
+        disableAll();
         schedular.getItems().addAll(schedularAlgorithm.FCFS.toString(),
                                     schedularAlgorithm.SJF_Preemptive.toString(),
                                     schedularAlgorithm.SJF_NonPreemptive.toString(),
@@ -155,5 +203,52 @@ public class Controller implements Initializable {
                                     schedularAlgorithm.Priority_NonPreemptive.toString(),
                                     schedularAlgorithm.Round_Robin.toString());
 
+        schedular.setOnAction(e->{
+            String algo =schedular.getValue().toString();
+            switch (algo){
+                case "FCFS":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "SJF_Preemptive":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "SJF_NonPreemptive":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "Priority_Preemptive":
+                    enableAll();
+                    quantumText.setDisable(true);
+                    break;
+                case "Priority_NonPreemptive":
+                    enableAll();
+                    quantumText.setDisable(true);
+                    break;
+                case "Round_Robin":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    break;
+            }
+            schedular.setDisable(true);
+        });
+
     }
+    private final void enableAll(){
+        priorityText.setDisable(false);
+        quantumText.setDisable(false);
+        cpuBurstText.setDisable(false);
+        arrivalText.setDisable(false);
+    }
+    private final void disableAll(){
+        priorityText.setDisable(true);
+        quantumText.setDisable(true);
+        cpuBurstText.setDisable(true);
+        arrivalText.setDisable(true);
+    }
+
 }
