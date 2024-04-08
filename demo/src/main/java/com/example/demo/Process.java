@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import javafx.scene.layout.Background;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 public class Process {
@@ -7,12 +9,32 @@ public class Process {
     private int cpuBurst;
     private int priority;
     private Color color;
+    private int arrival;
+    private int remainingTime;
 
-    public Process(String name,int cpuBurst,int priority,Color color){
+    public Process(String name,int arrival,int cpuBurst,int priority,Color color){
         this.name = name;
         this.cpuBurst = cpuBurst;
         this.priority = priority;
         this.color = color;
+        this.arrival = arrival;
+        remainingTime = cpuBurst;
+    }
+
+    public int getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(int arrival) {
+        this.arrival = arrival;
+    }
+
+    public int getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(int remainingTime) {
+        this.remainingTime = remainingTime;
     }
 
     public Color getColor() {

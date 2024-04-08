@@ -1,3 +1,6 @@
 .axis-background {
     -fx-background-color: transparent;
 }
+.root{
+    -fx-background-image: url("/Photo/back.jpg");
+}
