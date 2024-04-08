@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.*;
 
 public class Controller implements Initializable {
+    private Timeline timeline;
 
     private Vector<Color>color = new Vector<>();
     @FXML
@@ -55,15 +56,17 @@ public class Controller implements Initializable {
             System.out.println(k);
             k++;
             System.out.println("Delay finished!");
-            if(k==4){
-                e.consume();
+            if(k==3){
+                timeline.stop();
             }
         });
         // Create a Timeline and add the KeyFrame
-        Timeline timeline = new Timeline(keyFrame);
+        timeline = new Timeline(keyFrame);
         // Set the cycle count to 1 (play the timeline once)
+        timeline.setCycleCount(5);
         // Start the timeline
         timeline.play();
+
         int i = 0;
         list1.setCellFactory(param -> new ListCell<String>() {
             @Override
