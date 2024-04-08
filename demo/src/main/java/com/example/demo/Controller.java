@@ -129,8 +129,44 @@ public class Controller implements Initializable {
             if(schedularValue.equals(schedularAlgorithm.FCFS.toString())
                     || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
                     || schedularValue.equals(schedularAlgorithm.SJF_NonPreemptive.toString())){
-
-
+                if(!isValidInputForFCFS_SJF()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"please fill all the textFields");
+                    alert.setTitle("Incomplete Input");
+                    alert.show();
+                }
+                else{
+                    processes.add(new Process("P"+(processIndex+1),Integer.parseInt(arrivalText.getText()),Integer.parseInt(cpuBurstText.getText()),0,colors.get(processIndex)));
+                    processIndex++;
+                    processTable.refresh();
+                }
+            }
+            else if(schedularValue.equals(schedularAlgorithm.Priority_Preemptive.toString())
+                    ||schedularValue.equals(schedularAlgorithm.Priority_NonPreemptive.toString())){
+                if(!isValidInputForPriority()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"please fill all the textFields");
+                    alert.setTitle("Incomplete Input");
+                    alert.show();
+                }
+                else{
+                    processes.add(new Process("P"+(processIndex+1),Integer.parseInt(arrivalText.getText()),Integer.parseInt(cpuBurstText.getText()),Integer.parseInt(priorityText.getText()),colors.get(processIndex)));
+                    processIndex++;
+                    processTable.refresh();
+                }
+            }
+            else{//Round Robin
+                String s = quantumText.getText();
+                if(!isValidInputForRoundRobin() || s.isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,"please fill all the textFields");
+                    alert.setTitle("Incomplete Input");
+                    alert.show();
+                }
+                else{
+                    timeQuantum = Integer.parseInt(quantumText.getText());
+                    quantumText.setDisable(true);
+                    processes.add(new Process("P"+(processIndex+1),Integer.parseInt(arrivalText.getText()),Integer.parseInt(cpuBurstText.getText()),0,colors.get(processIndex)));
+                    processIndex++;
+                    processTable.refresh();
+                }
             }
         }
     }
@@ -142,8 +178,10 @@ public class Controller implements Initializable {
         schedular.setDisable(false);
         disableAll();
         processTable.refresh();
+        chart.getData().clear();
         liveFlag = false;
         timeQuantum = null;
+        processIndex = 0;
     }
 
     @FXML
@@ -177,12 +215,7 @@ public class Controller implements Initializable {
             colors.add(Color.hsb(hue * 360, saturation, brightness));
         }
         colors = colors.reversed();
-        processes = FXCollections.observableArrayList(
-                new Process("P1",0,2,1,colors.get(0)),
-                new Process("P2",0,3,1,colors.get(1)),
-                new Process("P3",0,0,1,colors.get(2)),
-                new Process("P4",0,5,1,colors.get(3))
-        );
+        processes = FXCollections.observableArrayList();
         //set the colors of the cells
         colorCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getColor()));
         colorCol.setCellFactory(new Callback<>() {
