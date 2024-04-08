@@ -2,7 +2,6 @@ package com.example.demo;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,7 +11,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -31,7 +29,6 @@ public class Controller implements Initializable {
     private List<Color> colors;
     private ObservableList<Process> processes;
     private Timeline timeline;
-    private Vector<Color>color = new Vector<>();
     @FXML
     private StackedBarChart<String , Double> chart;
     @FXML
@@ -52,18 +49,9 @@ public class Controller implements Initializable {
         XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
         chart.getData().add(series1);
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), e -> {
-            // Perform actions after the delay
-            //XYChart.Data<String,Double>data = new XYChart.Data<String,Double>("Os",(double)processes.get(k).getCpuBurst());
             XYChart.Data<String,Double>data = new XYChart.Data<String,Double>("Os",1.0);//
             series1.getData().add(data);
-            int x = new Random().nextInt(256);
-            int y = new Random().nextInt(256);
-            int z = new Random().nextInt(256);
-            //color.add(Color.rgb(x,y,z));
-            //System.out.println(String.format("-fx-bar-fill:#%h;",processes.get(k).getColor()));
             series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;",processes.get(k).getColor()));
-            //System.out.println(processes.get(k).getColor());
-            System.out.println(k);
             Process process = (Process) processTable.getItems().get(k);
             process.setCpuBurst(process.getCpuBurst()-1);
             processTable.refresh();
@@ -80,8 +68,6 @@ public class Controller implements Initializable {
         timeline.setCycleCount(Timeline.INDEFINITE);
         // Start the timeline
         timeline.play();
-        int i = 0;
-        // Set a custom cell factory
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
