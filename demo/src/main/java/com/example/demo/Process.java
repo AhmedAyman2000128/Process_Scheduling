@@ -1,10 +1,8 @@
 package com.example.demo;
 
-import javafx.scene.layout.Background;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
-public class Process {
+public class Process implements Cloneable{
     private String name ;
     private int cpuBurst;
     private int priority;
@@ -65,5 +63,10 @@ public class Process {
 
     public void setCpuBurst(int cpuBurst) {
         this.cpuBurst = cpuBurst;
+    }
+    @Override
+    public Process clone(){
+        Process process = new Process(this.name,this.arrival,this.cpuBurst,this.priority,this.color);
+        return process;
     }
 }

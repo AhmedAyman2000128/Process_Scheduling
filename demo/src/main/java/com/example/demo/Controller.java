@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.Algorithms.Fcfs;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,6 +19,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 import java.net.URL;
 
@@ -79,36 +81,71 @@ public class Controller implements Initializable {
     private Integer timeQuantum = null;
     //to provide color to the process entered
     private static int processIndex = 0;
-
+    private Vector<Pair<String,Integer>>readyProcesses;
     @FXML
     void showChart(ActionEvent event) {
-        if(processes != null && processes.size()!=0){
-            liveFlag = true;
-            XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
-            chart.getData().add(series1);
-            KeyFrame keyFrame;
-            keyFrame = new KeyFrame(Duration.seconds(1), e -> {
-                if(processes.get(k).getRemainingTime()>0){
+        if(processes!=null && processes.size()!=0){
+            ObservableList<Process>processes1 = FXCollections.observableArrayList();
+            for(int i=0;i<processes.size();i++){
+                processes1.add(processes.get(i).clone());
+            }
+            if(schedular.getValue().toString().equals(schedularAlgorithm.FCFS.toString())){
+                readyProcesses = Fcfs.getganttChart(processes1);
+                for(int i=0;i<readyProcesses.size();i++){
+                    System.out.println(readyProcesses.get(i).getKey() + " " + readyProcesses.get(i).getValue());
+                }
+            }
+            else{
+
+            }
+            if(readyProcesses.size()!=0 && readyProcesses!=null){
+                liveFlag = true;
+                XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
+                chart.getData().add(series1);
+                KeyFrame keyFrame;
+                keyFrame = new KeyFrame(Duration.seconds(1), e -> {
                     XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
                     series1.getData().add(data);
-                    series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", processes.get(k).getColor()));
-                    Process process = (Process) processTable.getItems().get(k);
-                    process.setRemainingTime(process.getRemainingTime() - 1);
-                    processTable.refresh();
-                }
-                if(processes.get(k).getRemainingTime() == 0)
-                    k++;
-                if(k==processes.size()){
-                    k=0;
-                    timeline.stop();
-                }
-            });
-            // Create a Timeline and add the KeyFrame
-            timeline = new Timeline(keyFrame);
-            // Set the cycle count to 1 (play the timeline once)
-            timeline.setCycleCount(Timeline.INDEFINITE);
-            // Start the timeline
-            timeline.play();
+                    Color color = null;
+                    for(int i=0;i<processes.size();i++){
+                        if(processes.get(i).getName().equals(readyProcesses.getFirst().getKey())){
+                            processes.get(i).setRemainingTime(processes.get(i).getRemainingTime()-1);
+                            processTable.refresh();
+                            color = processes.get(i).getColor();
+                            break;
+                        }
+                    }
+                    Pair pair = new Pair(readyProcesses.getFirst().getKey(),readyProcesses.getFirst().getValue()-1);
+                    readyProcesses.removeFirst();
+                    if((int)pair.getValue() !=0){
+                        readyProcesses.addFirst(pair);
+                    }
+                    if(color == null){
+                        series1.getData().getLast().getNode().setStyle("-fx-bar-fill:transparent;");
+                    }
+                    else{
+                        series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
+                    }
+
+                    //Process process = (Process) processTable.getItems().get(k);
+                    //process.setRemainingTime(process.getRemainingTime() - 1);
+                    //processTable.refresh();
+                    if(readyProcesses.size()==0){
+                        timeline.stop();
+                    }
+                });
+                // Create a Timeline and add the KeyFrame
+                timeline = new Timeline(keyFrame);
+                // Set the cycle count to 1 (play the timeline once)
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                // Start the timeline
+                timeline.play();
+            }
+            else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,"Please insert processes first");
+                alert.setTitle("No processes error");
+                alert.show();
+            }
         }
         else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION,"Please insert processes first");
@@ -169,6 +206,7 @@ public class Controller implements Initializable {
                 }
             }
         }
+        clearAllText();
     }
 
     @FXML
@@ -182,6 +220,8 @@ public class Controller implements Initializable {
         liveFlag = false;
         timeQuantum = null;
         processIndex = 0;
+        k=0;
+        clearAllText();
     }
 
     @FXML
@@ -195,10 +235,6 @@ public class Controller implements Initializable {
         else{
             processTable.getItems().remove(selectedItem);
             processes=(ObservableList<Process>)processTable.getItems();
-            System.out.println();
-            for(int i=0;i<processes.size();i++){
-                System.out.println(processes.get(i).getName());
-            }
         }
     }
 
@@ -313,5 +349,11 @@ public class Controller implements Initializable {
     }
     private boolean isValidInputForRoundRobin(){
         return isValidInputForFCFS_SJF();
+    }
+    private void clearAllText(){
+        cpuBurstText.clear();
+        arrivalText.clear();
+        priorityText.clear();
+        quantumText.clear();
     }
 }
