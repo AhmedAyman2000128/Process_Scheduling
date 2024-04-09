@@ -121,7 +121,7 @@ public class Controller implements Initializable {
                         readyProcesses.addFirst(pair);
                     }
                     if(color == null){
-                        series1.getData().getLast().getNode().setStyle("-fx-bar-fill:transparent;");
+                        series1.getData().getLast().getNode().setStyle("-fx-bar-fill:#cbcbcb;");
                     }
                     else{
                         series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
