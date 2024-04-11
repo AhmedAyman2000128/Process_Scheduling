@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
 public class Process implements Cloneable{

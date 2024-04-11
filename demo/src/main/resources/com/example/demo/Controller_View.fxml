@@ -18,7 +18,7 @@
    <children>
       <StackedBarChart fx:id="chart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" layoutX="156.0" layoutY="-110.0" legendVisible="false" prefHeight="448.0" prefWidth="166.0" rotate="90.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
         <xAxis>
-          <CategoryAxis fx:id="yAxis" side="BOTTOM" tickLabelFill="#e30909" tickLabelRotation="-90.0" tickLabelsVisible="false" />
+          <CategoryAxis fx:id="yAxis" opacity="0.0" side="BOTTOM" tickLabelFill="#e30909" tickLabelRotation="-90.0" tickLabelsVisible="false" />
         </xAxis>
         <yAxis>
           <NumberAxis minorTickVisible="false" side="RIGHT" style="-fx-tick-label-fill: #f1faee;" tickLabelRotation="-90.0" upperBound="10.0" fx:id="xAxis" />
@@ -96,7 +96,7 @@
                   <Font size="13.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="Plot">
+            <Button fx:id="simulateBtn" mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="simulate">
                <font>
                   <Font size="13.0" />
                </font>

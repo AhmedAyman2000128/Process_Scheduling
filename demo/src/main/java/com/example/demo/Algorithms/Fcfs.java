@@ -1,13 +1,8 @@
 package com.example.demo.Algorithms;
-
 import com.example.demo.Process;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
-
-import java.util.Arrays;
 import java.util.Vector;
-
 public class Fcfs {
     public static Vector<Pair<String,Integer>> getganttChart(ObservableList<Process>processes){
         for(int i=0;i<processes.size();i++){
