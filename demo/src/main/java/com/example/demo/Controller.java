@@ -23,12 +23,8 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
-
 import java.net.URL;
-
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Controller implements Initializable {
     @FXML
@@ -55,9 +51,16 @@ public class Controller implements Initializable {
         Priority_NonPreemptive,
         Round_Robin
     }
+    enum mode{
+        Static,
+        Live
+    }
     @FXML
     private ChoiceBox<String> schedular;
+    @FXML
+    private ChoiceBox<String> modeBox;
     private final String SCHEDULAR_DEFAULT = "Algorithm";
+    private final String MODE_DEFAULT = "Mode";
     @FXML
     private TableColumn<Process, Integer> arrivalCol;
     @FXML
@@ -81,9 +84,7 @@ public class Controller implements Initializable {
     private TableColumn<Process, String> processCol;
     @FXML
     private TableView processTable;
-    static boolean syn = true;
     static int k = 0;// for timeline
-    static int PROCESSCOUNT = 4;
     // Indicate whether adding processes while running or at the beginning
     boolean liveFlag = false;
     private Integer timeQuantum = null;
@@ -92,11 +93,11 @@ public class Controller implements Initializable {
     private Vector<Pair<String,Integer>>readyProcesses;
     @FXML
     void showChart(ActionEvent event) {
-
         if(timeline!=null){
             timeline.stop();
         }
         if(processes!=null && processes.size()!=0){
+
             simulateBtn.setDisable(true);
             liveFlag = true;
             ObservableList<Process>processes1 = FXCollections.observableArrayList();
@@ -106,9 +107,6 @@ public class Controller implements Initializable {
             String schedulingAlgo = schedular.getValue().toString();
             if(schedulingAlgo.equals(schedularAlgorithm.FCFS.toString())){
                 readyProcesses = Fcfs.getganttChart(processes1);
-                for(int i=0;i<readyProcesses.size();i++){
-                    System.out.println(readyProcesses.get(i).getKey() + " " + readyProcesses.get(i).getValue());
-                }
             }
             else if(schedulingAlgo.equals(schedularAlgorithm.Priority_NonPreemptive.toString())){
                 readyProcesses = Priority_NonPreemptive.getganttChart(processes1);
@@ -119,6 +117,10 @@ public class Controller implements Initializable {
             else if(schedulingAlgo.equals(schedularAlgorithm.Priority_Preemptive.toString())){
                 readyProcesses = Priority_Preemptive.getganttChart(processes1);
             }
+            float averageWaiting = Process.getAverageWaitingTime(readyProcesses,processes);
+            float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
+            System.out.println("Average Turnaround : "+averageTurnAround);
+            System.out.println("Average Waiting Time :"+averageWaiting);
             //ersm el chart mn el 2wl
             int k = running_time;
             while(k>0){
@@ -154,7 +156,6 @@ public class Controller implements Initializable {
                             break;
                         }
                     }
-                    System.out.println(running_time);
                     if(!me){
                         XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
                         series1.getData().add(data);
@@ -202,7 +203,13 @@ public class Controller implements Initializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "please choose Scheduling Algorithm");
             alert.setTitle("Error");
             alert.show();
-        } else {
+        }
+        else if(modeBox.getValue().toString().equals(MODE_DEFAULT)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "please choose Mode");
+            alert.setTitle("Error");
+            alert.show();
+        }
+        else {
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION, "you cannot enter past Arrival Time");
             alert1.setOnCloseRequest(e -> {
                 if(timeline!=null)timeline.play();
@@ -281,9 +288,12 @@ public class Controller implements Initializable {
 
     @FXML
     void resetState(ActionEvent event) {
+        simulateBtn.setDisable(true);
         if(processes!=null) processes.clear();
         schedular.setValue(SCHEDULAR_DEFAULT);
+        modeBox.setValue(MODE_DEFAULT);
         schedular.setDisable(false);
+        modeBox.setDisable(true);
         disableAll();
         processTable.refresh();
         if(chart!=null)chart.getData().clear();
@@ -298,7 +308,6 @@ public class Controller implements Initializable {
             timeline = null;
         }
         running_time=0;
-        simulateBtn.setDisable(false);
     }
 
     @FXML
@@ -317,7 +326,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        chart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");///////////////
+        chart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         chart.setCategoryGap(100);
         colors = new ArrayList<>();
         int count = 30;
@@ -359,16 +368,27 @@ public class Controller implements Initializable {
 
         /////////////////Schedular Choice Box////////////////////////
         schedular.setValue(SCHEDULAR_DEFAULT);
+        modeBox.setValue(MODE_DEFAULT);
+        modeBox.setDisable(true);
+        simulateBtn.setDisable(true);
         disableAll();
-        schedular.getItems().addAll(schedularAlgorithm.FCFS.toString(),
+        schedular.getItems().addAll(
+                schedularAlgorithm.FCFS.toString(),
                 schedularAlgorithm.SJF_Preemptive.toString(),
                 schedularAlgorithm.SJF_NonPreemptive.toString(),
                 schedularAlgorithm.Priority_Preemptive.toString(),
                 schedularAlgorithm.Priority_NonPreemptive.toString(),
                 schedularAlgorithm.Round_Robin.toString());
-
+        modeBox.getItems().addAll(
+                mode.Static.toString(),
+                mode.Live.toString()
+        );
         schedular.setOnAction(e->{
-            String algo =schedular.getValue().toString();
+            modeBox.setDisable(false);
+            schedular.setDisable(true);
+        });
+        modeBox.setOnAction(e->{
+            String algo = schedular.getValue().toString();
             switch (algo){
                 case "FCFS":
                     enableAll();
@@ -398,7 +418,8 @@ public class Controller implements Initializable {
                     priorityText.setDisable(true);
                     break;
             }
-            schedular.setDisable(true);
+            simulateBtn.setDisable(false);
+            modeBox.setDisable(true);
         });
     }
     private void enableAll(){

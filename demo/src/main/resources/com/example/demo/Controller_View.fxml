@@ -85,7 +85,8 @@
       </HBox>
       <HBox layoutX="54.0" layoutY="421.0" prefHeight="27.0" prefWidth="417.0" spacing="6.0">
          <children>
-            <ChoiceBox fx:id="schedular" prefHeight="27.0" prefWidth="150.0" style="-fx-background-color: #00A8a8;" />
+            <ChoiceBox fx:id="schedular" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8;" />
+            <ChoiceBox fx:id="modeBox" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8;" />
             <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetState" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="Reset">
                <font>
                   <Font size="13.0" />
