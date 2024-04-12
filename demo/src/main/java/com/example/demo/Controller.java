@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.Algorithms.Fcfs;
 import com.example.demo.Algorithms.Priority_NonPreemptive;
+import com.example.demo.Algorithms.Priority_Preemptive;
 import com.example.demo.Algorithms.SJF_NonPreemptive;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -90,7 +91,7 @@ public class Controller implements Initializable {
     private static int running_time = 0;
     private Vector<Pair<String,Integer>>readyProcesses;
     @FXML
-     void showChart(ActionEvent event) {
+    void showChart(ActionEvent event) {
 
         if(timeline!=null){
             timeline.stop();
@@ -115,41 +116,21 @@ public class Controller implements Initializable {
             else if(schedulingAlgo.equals(schedularAlgorithm.SJF_NonPreemptive.toString())){
                 readyProcesses = SJF_NonPreemptive.getganttChart(processes1);
             }
+            else if(schedulingAlgo.equals(schedularAlgorithm.Priority_Preemptive.toString())){
+                readyProcesses = Priority_Preemptive.getganttChart(processes1);
+            }
             //ersm el chart mn el 2wl
             int k = running_time;
-            chart.getData().clear();
             while(k>0){
-                XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
-                chart.getData().add(series1);
-                Color color = null;
-                for(int i=0;i<processes.size();i++){
-                    if(processes.get(i).getName().equals(readyProcesses.getFirst().getKey())){
-                        color = processes.get(i).getColor();
-                        break;
-                    }
-                }
                 if(k>=readyProcesses.getFirst().getValue()){
-                    double timeTobeDrawn = readyProcesses.getFirst().getValue();
                     k=k-readyProcesses.getFirst().getValue();
-                    //2rsm
-                    XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", timeTobeDrawn);
-                    series1.getData().add(data);
                     readyProcesses.removeFirst();
                 }
                 else{
-                    double time = readyProcesses.getFirst().getValue()-k;
-                    k=0;
                     Pair pair = new Pair(readyProcesses.getFirst().getKey(),readyProcesses.getFirst().getValue()-k);
+                    k=0;
                     readyProcesses.removeFirst();
                     readyProcesses.addFirst(pair);
-                    XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);
-                    series1.getData().add(data);
-                }
-                if(color == null){
-                    series1.getData().getLast().getNode().setStyle("-fx-bar-fill:#cbcbcb;");
-                }
-                else{
-                    series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
                 }
             }
             if(readyProcesses.size()!=0 && readyProcesses!=null){
@@ -157,40 +138,40 @@ public class Controller implements Initializable {
                 chart.getData().add(series1);
                 KeyFrame keyFrame;
                 keyFrame = new KeyFrame(Duration.seconds(1), e -> {
-                        running_time++;
-                        Color color = null;
-                        boolean me = false;//in case of remaining time =0 m3na kda enha etrsmt
-                        for (int i = 0; i < processes.size(); i++) {
-                            if (processes.get(i).getName().equals(readyProcesses.getFirst().getKey())) {
-                                if(processes.get(i).getRemainingTime()==0){
-                                    me = true;
-                                    readyProcesses.removeFirst();
-                                    break;
-                                }
-                                processes.get(i).setRemainingTime(processes.get(i).getRemainingTime() - 1);
-                                processTable.refresh();
-                                color = processes.get(i).getColor();
+                    running_time++;
+                    Color color = null;
+                    boolean me = false;//in case of remaining time =0 m3na kda enha etrsmt
+                    for (int i = 0; i < processes.size(); i++) {
+                        if (processes.get(i).getName().equals(readyProcesses.getFirst().getKey())) {
+                            if(processes.get(i).getRemainingTime()==0){
+                                me = true;
+                                readyProcesses.removeFirst();
                                 break;
                             }
+                            processes.get(i).setRemainingTime(processes.get(i).getRemainingTime() - 1);
+                            processTable.refresh();
+                            color = processes.get(i).getColor();
+                            break;
                         }
-                         System.out.println(running_time);
-                        if(!me){
-                            XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
-                            series1.getData().add(data);
-                            Pair pair = new Pair(readyProcesses.getFirst().getKey(), readyProcesses.getFirst().getValue() - 1);
-                            readyProcesses.removeFirst();
-                            if ((int) pair.getValue() != 0) {
-                                readyProcesses.addFirst(pair);
-                            }
-                            if (color == null) {
-                                series1.getData().getLast().getNode().setStyle("-fx-bar-fill:#ffffff;");
-                            } else {
-                                series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
-                            }
-                            if (readyProcesses.size() == 0) {
-                                timeline.stop();
-                            }
+                    }
+                    System.out.println(running_time);
+                    if(!me){
+                        XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
+                        series1.getData().add(data);
+                        Pair pair = new Pair(readyProcesses.getFirst().getKey(), readyProcesses.getFirst().getValue() - 1);
+                        readyProcesses.removeFirst();
+                        if ((int) pair.getValue() != 0) {
+                            readyProcesses.addFirst(pair);
                         }
+                        if (color == null) {
+                            series1.getData().getLast().getNode().setStyle("-fx-bar-fill:#cbcbcb;");
+                        } else {
+                            series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
+                        }
+                        if (readyProcesses.size() == 0) {
+                            timeline.stop();
+                        }
+                    }
                 });
                 // Create a Timeline and add the KeyFrame
                 timeline = new Timeline(keyFrame);
@@ -215,64 +196,87 @@ public class Controller implements Initializable {
 
     @FXML
     void addProcess(ActionEvent event) {
-            String schedularValue = schedular.getValue().toString();
-            if (schedularValue.equals(SCHEDULAR_DEFAULT)) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "please choose Scheduling Algorithm");
-                alert.setTitle("Error");
-                alert.show();
-            } else {
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION, "you cannot enter past Arrival Time");
-                alert1.setOnCloseRequest(e -> {
-                    timeline.play();
-                });
-                if (Integer.parseInt(arrivalText.getText()) < running_time) {
-                    timeline.stop();
-                    alert1.show();
+        String schedularValue = schedular.getValue().toString();
+        boolean okFlag = true;
+        if (schedularValue.equals(SCHEDULAR_DEFAULT)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "please choose Scheduling Algorithm");
+            alert.setTitle("Error");
+            alert.show();
+        } else {
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION, "you cannot enter past Arrival Time");
+            alert1.setOnCloseRequest(e -> {
+                if(timeline!=null)timeline.play();
+            });
+            Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
+            alert2.setTitle("Incomplete Input");
+            alert2.setOnCloseRequest(e->{
+                if(timeline!=null)timeline.play();
+            });
+            if (schedularValue.equals(schedularAlgorithm.FCFS.toString())
+                    || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
+                    || schedularValue.equals(schedularAlgorithm.SJF_NonPreemptive.toString())) {
+                if (!isValidInputForFCFS_SJF()) {
+                    okFlag = false;
+                    if(timeline!=null)timeline.stop();
+                    alert2.show();
                 } else {
-                    if (schedularValue.equals(schedularAlgorithm.FCFS.toString())
-                            || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
-                            || schedularValue.equals(schedularAlgorithm.SJF_NonPreemptive.toString())) {
-                        if (!isValidInputForFCFS_SJF()) {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
-                            alert.setTitle("Incomplete Input");
-                            alert.show();
-                        } else {
-                            processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), 0, colors.get(processIndex)));
-                            processIndex++;
-                            processTable.refresh();
-                        }
-                    } else if (schedularValue.equals(schedularAlgorithm.Priority_Preemptive.toString())
-                            || schedularValue.equals(schedularAlgorithm.Priority_NonPreemptive.toString())) {
-                        if (!isValidInputForPriority()) {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
-                            alert.setTitle("Incomplete Input");
-                            alert.show();
-                        } else {
-                            processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), Integer.parseInt(priorityText.getText()), colors.get(processIndex)));
-                            processIndex++;
-                            processTable.refresh();
-                        }
-                    } else {//Round Robin
-                        String s = quantumText.getText();
-                        if (!isValidInputForRoundRobin() || s.isEmpty()) {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
-                            alert.setTitle("Incomplete Input");
-                            alert.show();
-                        } else {
-                            timeQuantum = Integer.parseInt(quantumText.getText());
-                            quantumText.setDisable(true);
-                            processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), 0, colors.get(processIndex)));
-                            processIndex++;
-                            processTable.refresh();
-                        }
+                    if (Integer.parseInt(arrivalText.getText()) < running_time) {
+                        okFlag = false;
+                        timeline.stop();
+                        alert1.show();
+                    }
+                    else {
+                        processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), 0, colors.get(processIndex)));
+                        processIndex++;
+                        processTable.refresh();
                     }
                 }
+            } else if (schedularValue.equals(schedularAlgorithm.Priority_Preemptive.toString())
+                    || schedularValue.equals(schedularAlgorithm.Priority_NonPreemptive.toString())) {
+                if (!isValidInputForPriority()) {
+                    okFlag = false;
+                    if(timeline!=null)timeline.stop();
+                    alert2.show();
+                } else {
+                    if (Integer.parseInt(arrivalText.getText()) < running_time) {
+                        okFlag = false;
+                        timeline.stop();
+                        alert1.show();
+                    }
+                    else {
+                        processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), Integer.parseInt(priorityText.getText()), colors.get(processIndex)));
+                        processIndex++;
+                        processTable.refresh();
+                    }
+                }
+            } else {//Round Robin
+                String s = quantumText.getText();
+                if (!isValidInputForRoundRobin() || s.isEmpty()) {
+                    okFlag = false;
+                    if(timeline!=null)timeline.stop();
+                    alert2.show();
+                } else {
+                    if (Integer.parseInt(arrivalText.getText()) < running_time) {
+                        okFlag = false;
+                        timeline.stop();
+                        alert1.show();
+                    }
+                    else {
+                        timeQuantum = Integer.parseInt(quantumText.getText());
+                        quantumText.setDisable(true);
+                        processes.add(new Process("P" + (processIndex + 1), Integer.parseInt(arrivalText.getText()), Integer.parseInt(cpuBurstText.getText()), 0, colors.get(processIndex)));
+                        processIndex++;
+                        processTable.refresh();
+                    }
+                }
+            }
+            if(okFlag) {
                 if (liveFlag && Integer.parseInt(arrivalText.getText()) >= running_time) {
                     showChart(event);
                 }
             }
-            clearAllText();
-
+        }
+        clearAllText();
     }
 
     @FXML
@@ -288,7 +292,11 @@ public class Controller implements Initializable {
         processIndex = 0;
         k=0;
         clearAllText();
-        if(timeline!=null) timeline = null;
+        if(timeline!=null)
+        {
+            timeline.stop();
+            timeline = null;
+        }
         running_time=0;
         simulateBtn.setDisable(false);
     }
@@ -353,11 +361,11 @@ public class Controller implements Initializable {
         schedular.setValue(SCHEDULAR_DEFAULT);
         disableAll();
         schedular.getItems().addAll(schedularAlgorithm.FCFS.toString(),
-                                    schedularAlgorithm.SJF_Preemptive.toString(),
-                                    schedularAlgorithm.SJF_NonPreemptive.toString(),
-                                    schedularAlgorithm.Priority_Preemptive.toString(),
-                                    schedularAlgorithm.Priority_NonPreemptive.toString(),
-                                    schedularAlgorithm.Round_Robin.toString());
+                schedularAlgorithm.SJF_Preemptive.toString(),
+                schedularAlgorithm.SJF_NonPreemptive.toString(),
+                schedularAlgorithm.Priority_Preemptive.toString(),
+                schedularAlgorithm.Priority_NonPreemptive.toString(),
+                schedularAlgorithm.Round_Robin.toString());
 
         schedular.setOnAction(e->{
             String algo =schedular.getValue().toString();

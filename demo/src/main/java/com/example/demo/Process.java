@@ -2,6 +2,9 @@ package com.example.demo;
 
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
+
+import java.util.Vector;
 
 public class Process implements Cloneable{
     private String name ;
@@ -69,5 +72,15 @@ public class Process implements Cloneable{
     public Process clone(){
         Process process = new Process(this.name,this.arrival,this.cpuBurst,this.priority,this.color);
         return process;
+    }
+    public static int getAverageWaitingTime(Vector<Pair<String,Integer>>gantt,ObservableList<Process>processes){
+        int avgWaitingTime=0;
+
+        return avgWaitingTime;
+    }
+    public static int getAverageTurnAroundTime(Vector<Pair<String,Integer>>gantt,ObservableList<Process>processes){
+        int avgTurnAround=0;
+
+        return avgTurnAround;
     }
 }
