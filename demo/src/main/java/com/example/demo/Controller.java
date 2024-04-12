@@ -93,13 +93,11 @@ public class Controller implements Initializable {
     private Vector<Pair<String,Integer>>readyProcesses;
     @FXML
     void showChart(ActionEvent event) {
+        //if(modeBox.getValue().equals(mode.Live.toString()))
         if(timeline!=null){
             timeline.stop();
         }
         if(processes!=null && processes.size()!=0){
-
-            simulateBtn.setDisable(true);
-            liveFlag = true;
             ObservableList<Process>processes1 = FXCollections.observableArrayList();
             for(int i=0;i<processes.size();i++){
                 processes1.add(processes.get(i).clone());
@@ -121,23 +119,24 @@ public class Controller implements Initializable {
             float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
             System.out.println("Average Turnaround : "+averageTurnAround);
             System.out.println("Average Waiting Time :"+averageWaiting);
-            //ersm el chart mn el 2wl
-            int k = running_time;
-            while(k>0){
-                if(k>=readyProcesses.getFirst().getValue()){
-                    k=k-readyProcesses.getFirst().getValue();
-                    readyProcesses.removeFirst();
+            XYChart.Series<String, Double> series1 = new XYChart.Series<String, Double>();
+            chart.getData().add(series1);
+            if(modeBox.getValue().equals(mode.Live.toString())) {
+                simulateBtn.setDisable(true);
+                liveFlag = true;
+                //ersm el chart mn el 2wl
+                int k = running_time;
+                while (k > 0) {
+                    if (k >= readyProcesses.getFirst().getValue()) {
+                        k = k - readyProcesses.getFirst().getValue();
+                        readyProcesses.removeFirst();
+                    } else {
+                        Pair pair = new Pair(readyProcesses.getFirst().getKey(), readyProcesses.getFirst().getValue() - k);
+                        k = 0;
+                        readyProcesses.removeFirst();
+                        readyProcesses.addFirst(pair);
+                    }
                 }
-                else{
-                    Pair pair = new Pair(readyProcesses.getFirst().getKey(),readyProcesses.getFirst().getValue()-k);
-                    k=0;
-                    readyProcesses.removeFirst();
-                    readyProcesses.addFirst(pair);
-                }
-            }
-            if(readyProcesses.size()!=0 && readyProcesses!=null){
-                XYChart.Series<String,Double> series1= new XYChart.Series<String,Double>();
-                chart.getData().add(series1);
                 KeyFrame keyFrame;
                 keyFrame = new KeyFrame(Duration.seconds(1), e -> {
                     running_time++;
@@ -145,7 +144,7 @@ public class Controller implements Initializable {
                     boolean me = false;//in case of remaining time =0 m3na kda enha etrsmt
                     for (int i = 0; i < processes.size(); i++) {
                         if (processes.get(i).getName().equals(readyProcesses.getFirst().getKey())) {
-                            if(processes.get(i).getRemainingTime()==0){
+                            if (processes.get(i).getRemainingTime() == 0) {
                                 me = true;
                                 readyProcesses.removeFirst();
                                 break;
@@ -156,7 +155,7 @@ public class Controller implements Initializable {
                             break;
                         }
                     }
-                    if(!me){
+                    if (!me) {
                         XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", 1.0);//
                         series1.getData().add(data);
                         Pair pair = new Pair(readyProcesses.getFirst().getKey(), readyProcesses.getFirst().getValue() - 1);
@@ -180,12 +179,24 @@ public class Controller implements Initializable {
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 // Start the timeline
                 timeline.play();
-
             }
-            else{
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,"Please insert processes first");
-                alert.setTitle("No processes error");
-                alert.show();
+            else if(modeBox.getValue().equals(mode.Static.toString())){
+                disableAll();
+                for(int i=0;i<readyProcesses.size();i++){
+                    XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", (double)readyProcesses.get(i).getValue());//
+                    series1.getData().add(data);
+                    if(readyProcesses.get(i).getKey().equals("empty")){
+                        series1.getData().getLast().getNode().setStyle("-fx-bar-fill:#cbcbcb;");
+                    }
+                    else {
+                        for (int j = 0; j < processes.size(); j++) {
+                            if (processes.get(j).getName().equals(readyProcesses.get(i).getKey())) {
+                                series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;",processes.get(j).getColor()));
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
         else{
