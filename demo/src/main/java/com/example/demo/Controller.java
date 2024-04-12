@@ -1,9 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.Algorithms.Fcfs;
-import com.example.demo.Algorithms.Priority_NonPreemptive;
-import com.example.demo.Algorithms.Priority_Preemptive;
-import com.example.demo.Algorithms.SJF_NonPreemptive;
+import com.example.demo.Algorithms.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleObjectProperty;
@@ -115,6 +112,9 @@ public class Controller implements Initializable {
             else if(schedulingAlgo.equals(schedularAlgorithm.Priority_Preemptive.toString())){
                 readyProcesses = Priority_Preemptive.getganttChart(processes1);
             }
+            else if(schedulingAlgo.equals(schedularAlgorithm.Round_Robin.toString())){
+                readyProcesses = RoundRobin.getGanttChart(processes1,timeQuantum);
+            }
             float averageWaiting = Process.getAverageWaitingTime(readyProcesses,processes);
             float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
             System.out.println("Average Turnaround : "+averageTurnAround);
@@ -192,6 +192,8 @@ public class Controller implements Initializable {
                         for (int j = 0; j < processes.size(); j++) {
                             if (processes.get(j).getName().equals(readyProcesses.get(i).getKey())) {
                                 series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;",processes.get(j).getColor()));
+                                processes.get(j).setRemainingTime(0);
+                                processTable.refresh();
                                 break;
                             }
                         }
@@ -319,6 +321,7 @@ public class Controller implements Initializable {
             timeline = null;
         }
         running_time=0;
+        quantumText.clear();
     }
 
     @FXML
@@ -464,6 +467,6 @@ public class Controller implements Initializable {
         cpuBurstText.clear();
         arrivalText.clear();
         priorityText.clear();
-        quantumText.clear();
+        //quantumText.clear();
     }
 }
