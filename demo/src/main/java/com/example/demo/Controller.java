@@ -97,11 +97,13 @@ public class Controller implements Initializable {
     @FXML
     void showChart(ActionEvent event) {
         //if(modeBox.getValue().equals(mode.Live.toString()))
-        removeBtn.setDisable(true);
+
         if(timeline!=null){
             timeline.stop();
         }
         if(processes!=null && processes.size()!=0){
+            removeBtn.setDisable(true);
+            simulateBtn.setDisable(true);
             ObservableList<Process>processes1 = FXCollections.observableArrayList();
             for(int i=0;i<processes.size();i++){
                 processes1.add(processes.get(i).clone());
@@ -133,7 +135,6 @@ public class Controller implements Initializable {
             chart.getData().add(series1);
             if(modeBox.getValue().equals(mode.Live.toString())) {
                 stopBtn.setDisable(false);
-                simulateBtn.setDisable(true);
                 liveFlag = true;
                 //ersm el chart mn el 2wl
                 int k = running_time;
