@@ -15,6 +15,8 @@ import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -85,12 +87,12 @@ public class Controller implements Initializable {
     private TableView processTable;
     @FXML
     private Button stopBtn;
-    @FXML
-    private Button continueBtn;
+
     @FXML
     private Label avgWaitTimeLbl;
     @FXML
     private Label avgtTurnaroundTimeLbl;
+    static boolean stopState;
     static int k = 0;// for timeline
     // Indicate whether adding processes while running or at the beginning
     boolean liveFlag = false;
@@ -188,7 +190,6 @@ public class Controller implements Initializable {
                             disableAll();
                             addBtn.setDisable(true);
                             stopBtn.setDisable(true);
-                            continueBtn.setDisable(true);
                             if(timeline!=null)timeline.stop();
                         }
                     }
@@ -324,52 +325,65 @@ public class Controller implements Initializable {
 
     @FXML
     void simulationStop(ActionEvent event) {
-        if(timeline!=null)timeline.stop();
-        continueBtn.setDisable(false);
-        stopBtn.setDisable(true);
-        addBtn.setDisable(false);
-        String algo = schedular.getValue().toString();
-        switch (algo){
-            case "FCFS":
-                enableAll();
-                priorityText.setDisable(true);
-                quantumText.setDisable(true);
-                break;
-            case "SJF_Preemptive":
-                enableAll();
-                priorityText.setDisable(true);
-                quantumText.setDisable(true);
-                break;
-            case "SJF_NonPreemptive":
-                enableAll();
-                priorityText.setDisable(true);
-                quantumText.setDisable(true);
-                break;
-            case "Priority_Preemptive":
-                enableAll();
-                quantumText.setDisable(true);
-                break;
-            case "Priority_NonPreemptive":
-                enableAll();
-                quantumText.setDisable(true);
-                break;
-            case "Round_Robin":
-                enableAll();
-                priorityText.setDisable(true);
-                quantumText.setDisable(true);
-                break;
+        if(stopState){
+            stopState = false;
+            Image image = new Image(getClass().getResourceAsStream("/Photo/play.png"));
+            ImageView playView = new ImageView(image);
+            playView.setFitHeight(50);
+            playView.setPreserveRatio(true);
+            stopBtn.setGraphic(playView);
+            if(timeline!=null)timeline.stop();
+            addBtn.setDisable(false);
+            String algo = schedular.getValue().toString();
+            switch (algo){
+                case "FCFS":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "SJF_Preemptive":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "SJF_NonPreemptive":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+                case "Priority_Preemptive":
+                    enableAll();
+                    quantumText.setDisable(true);
+                    break;
+                case "Priority_NonPreemptive":
+                    enableAll();
+                    quantumText.setDisable(true);
+                    break;
+                case "Round_Robin":
+                    enableAll();
+                    priorityText.setDisable(true);
+                    quantumText.setDisable(true);
+                    break;
+            }
         }
-    }
-    @FXML
-    void continueSimulation(ActionEvent event) {
-        //if(timeline!=null)timeline.play();
-        continueBtn.setDisable(true);
-        stopBtn.setDisable(false);
-        showChart(event);
+        else{
+            stopState = true;
+            Image image = new Image(getClass().getResourceAsStream("/Photo/pause.png"));
+            ImageView playView = new ImageView(image);
+            playView.setFitHeight(50);
+            playView.setPreserveRatio(true);
+            stopBtn.setGraphic(playView);
+            showChart(event);
+        }
     }
 
     @FXML
     void resetState(ActionEvent event) {
+        Image image = new Image(getClass().getResourceAsStream("/Photo/pause.png"));
+        ImageView playView = new ImageView(image);
+        playView.setFitHeight(50);
+        playView.setPreserveRatio(true);
+        stopBtn.setGraphic(playView);
         simulateBtn.setDisable(true);
         if(processes!=null) processes.clear();
         schedular.setValue(SCHEDULAR_DEFAULT);
@@ -393,10 +407,10 @@ public class Controller implements Initializable {
         quantumText.clear();
         addBtn.setDisable(false);
         stopBtn.setDisable(true);
-        continueBtn.setDisable(true);
         removeBtn.setDisable(false);
         avgtTurnaroundTimeLbl.setText("");
         avgWaitTimeLbl.setText("");
+        stopState = true;
     }
 
     @FXML
@@ -415,6 +429,17 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        stopState = true;
+        Image image = new Image(getClass().getResourceAsStream("/Photo/pause.png"));
+        ImageView view = new ImageView(image);
+        view.setFitHeight(50);
+        view.setPreserveRatio(true);
+        stopBtn.setGraphic(view);
+        image = new Image(getClass().getResourceAsStream("/Photo/orangePlus.png"));
+        view = new ImageView(image);
+        view.setFitHeight(40);
+        view.setPreserveRatio(true);
+        addBtn.setGraphic(view);
         chart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         chart.setCategoryGap(100);
         colors = new ArrayList<>();
@@ -449,7 +474,6 @@ public class Controller implements Initializable {
                 };
             }
         });
-        //+"-fx-border-color:#0488bf;"
         remCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("RemainingTime"));
         remCol.setStyle("-fx-alignment:center;");
         arrivalCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Arrival"));
@@ -468,7 +492,6 @@ public class Controller implements Initializable {
         modeBox.setDisable(true);
         simulateBtn.setDisable(true);
         stopBtn.setDisable(true);
-        continueBtn.setDisable(true);
         disableAll();
         schedular.getItems().addAll(
                 schedularAlgorithm.FCFS.toString(),
