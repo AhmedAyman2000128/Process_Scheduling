@@ -171,7 +171,9 @@ public class Controller implements Initializable {
                             series1.getData().getLast().getNode().setStyle(String.format("-fx-bar-fill:#%h;", color));
                         }
                         if (readyProcesses.size() == 0) {
-                            timeline.stop();
+                            disableAll();
+                            addBtn.setDisable(true);
+                            if(timeline!=null)timeline.stop();
                         }
                     }
                 });
@@ -180,7 +182,7 @@ public class Controller implements Initializable {
                 // Set the cycle count to 1 (play the timeline once)
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 // Start the timeline
-                timeline.play();
+                if(timeline!=null)timeline.play();
             }
             else if(modeBox.getValue().equals(mode.Static.toString())){
                 disableAll();
@@ -201,6 +203,8 @@ public class Controller implements Initializable {
                         }
                     }
                 }
+                disableAll();
+                addBtn.setDisable(true);
             }
         }
         else{
@@ -244,7 +248,7 @@ public class Controller implements Initializable {
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
                         okFlag = false;
-                        timeline.stop();
+                        if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
                     else {
@@ -262,7 +266,7 @@ public class Controller implements Initializable {
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
                         okFlag = false;
-                        timeline.stop();
+                        if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
                     else {
@@ -280,7 +284,7 @@ public class Controller implements Initializable {
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
                         okFlag = false;
-                        timeline.stop();
+                        if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
                     else {
@@ -324,6 +328,7 @@ public class Controller implements Initializable {
         }
         running_time=0;
         quantumText.clear();
+        addBtn.setDisable(false);
     }
 
     @FXML
