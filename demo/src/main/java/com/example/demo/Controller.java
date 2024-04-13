@@ -83,6 +83,10 @@ public class Controller implements Initializable {
     private TableColumn<Process, String> processCol;
     @FXML
     private TableView processTable;
+    @FXML
+    private Button stopBtn;
+    @FXML
+    private Button continueBtn;
     static int k = 0;// for timeline
     // Indicate whether adding processes while running or at the beginning
     boolean liveFlag = false;
@@ -93,6 +97,7 @@ public class Controller implements Initializable {
     @FXML
     void showChart(ActionEvent event) {
         //if(modeBox.getValue().equals(mode.Live.toString()))
+        removeBtn.setDisable(true);
         if(timeline!=null){
             timeline.stop();
         }
@@ -117,6 +122,9 @@ public class Controller implements Initializable {
             else if(schedulingAlgo.equals(schedularAlgorithm.Round_Robin.toString())){
                 readyProcesses = RoundRobin.getGanttChart(processes1,timeQuantum);
             }
+            else if(schedulingAlgo.equals(schedularAlgorithm.SJF_Preemptive.toString())){
+                readyProcesses = SJF_Preemptive.getGanttChart(processes1);
+            }
             float averageWaiting = Process.getAverageWaitingTime(readyProcesses,processes);
             float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
             System.out.println("Average Turnaround : "+averageTurnAround);
@@ -124,6 +132,7 @@ public class Controller implements Initializable {
             XYChart.Series<String, Double> series1 = new XYChart.Series<String, Double>();
             chart.getData().add(series1);
             if(modeBox.getValue().equals(mode.Live.toString())) {
+                stopBtn.setDisable(false);
                 simulateBtn.setDisable(true);
                 liveFlag = true;
                 //ersm el chart mn el 2wl
@@ -173,6 +182,8 @@ public class Controller implements Initializable {
                         if (readyProcesses.size() == 0) {
                             disableAll();
                             addBtn.setDisable(true);
+                            stopBtn.setDisable(true);
+                            continueBtn.setDisable(true);
                             if(timeline!=null)timeline.stop();
                         }
                     }
@@ -203,9 +214,10 @@ public class Controller implements Initializable {
                         }
                     }
                 }
-                disableAll();
                 addBtn.setDisable(true);
             }
+            addBtn.setDisable(true);
+            disableAll();
         }
         else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION,"Please insert processes first");
@@ -231,12 +243,12 @@ public class Controller implements Initializable {
         else {
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION, "you cannot enter past Arrival Time");
             alert1.setOnCloseRequest(e -> {
-                if(timeline!=null)timeline.play();
+                ///if(timeline!=null)timeline.play();
             });
             Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
             alert2.setTitle("Incomplete Input");
             alert2.setOnCloseRequest(e->{
-                if(timeline!=null)timeline.play();
+                //if(timeline!=null)timeline.play();
             });
             if (schedularValue.equals(schedularAlgorithm.FCFS.toString())
                     || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
@@ -298,11 +310,56 @@ public class Controller implements Initializable {
             }
             if(okFlag) {
                 if (liveFlag && Integer.parseInt(arrivalText.getText()) >= running_time) {
-                    showChart(event);
+
                 }
             }
         }
         clearAllText();
+    }
+
+    @FXML
+    void simulationStop(ActionEvent event) {
+        if(timeline!=null)timeline.stop();
+        continueBtn.setDisable(false);
+        stopBtn.setDisable(true);
+        addBtn.setDisable(false);
+        String algo = schedular.getValue().toString();
+        switch (algo){
+            case "FCFS":
+                enableAll();
+                priorityText.setDisable(true);
+                quantumText.setDisable(true);
+                break;
+            case "SJF_Preemptive":
+                enableAll();
+                priorityText.setDisable(true);
+                quantumText.setDisable(true);
+                break;
+            case "SJF_NonPreemptive":
+                enableAll();
+                priorityText.setDisable(true);
+                quantumText.setDisable(true);
+                break;
+            case "Priority_Preemptive":
+                enableAll();
+                quantumText.setDisable(true);
+                break;
+            case "Priority_NonPreemptive":
+                enableAll();
+                quantumText.setDisable(true);
+                break;
+            case "Round_Robin":
+                enableAll();
+                priorityText.setDisable(true);
+                break;
+        }
+    }
+    @FXML
+    void continueSimulation(ActionEvent event) {
+        //if(timeline!=null)timeline.play();
+        continueBtn.setDisable(true);
+        stopBtn.setDisable(false);
+        showChart(event);
     }
 
     @FXML
@@ -329,6 +386,9 @@ public class Controller implements Initializable {
         running_time=0;
         quantumText.clear();
         addBtn.setDisable(false);
+        stopBtn.setDisable(true);
+        continueBtn.setDisable(true);
+        removeBtn.setDisable(false);
     }
 
     @FXML
@@ -399,6 +459,8 @@ public class Controller implements Initializable {
         modeBox.setValue(MODE_DEFAULT);
         modeBox.setDisable(true);
         simulateBtn.setDisable(true);
+        stopBtn.setDisable(true);
+        continueBtn.setDisable(true);
         disableAll();
         schedular.getItems().addAll(
                 schedularAlgorithm.FCFS.toString(),
