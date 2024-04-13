@@ -12,9 +12,9 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Controller_View.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        stage.setScene(scene);
         String css = this.getClass().getResource("/Css/App.css").toExternalForm();
         scene.getStylesheets().add(css);
+        stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
     }

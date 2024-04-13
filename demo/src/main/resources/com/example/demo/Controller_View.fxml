@@ -29,12 +29,15 @@
           <TableColumn fx:id="processCol" prefWidth="48.66668701171875" text="Process" />
             <TableColumn fx:id="arrivalCol" prefWidth="75.0" text="Arrival" />
           <TableColumn fx:id="cpuBurstCol" prefWidth="67.33334350585938" text="CPU Burst" />
-            <TableColumn fx:id="remCol" prefWidth="98.66668701171875" text="Remaining time" />
-            <TableColumn fx:id="priorityCol" prefWidth="68.00006103515625" text="Priority" />
+            <TableColumn fx:id="remCol" prefWidth="94.00001525878906" text="Remaining time" />
+            <TableColumn fx:id="priorityCol" prefWidth="74.0" text="Priority" />
             <TableColumn fx:id="colorCol" prefWidth="54.6666259765625" text="Color" />
         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
-      <Button fx:id="addBtn" layoutX="413.0" layoutY="457.0" mnemonicParsing="false" onAction="#addProcess" prefHeight="53.0" prefWidth="58.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="Add">
+      <Button fx:id="addBtn" layoutX="413.0" layoutY="457.0" mnemonicParsing="false" onAction="#addProcess" prefHeight="53.0" prefWidth="58.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 50 50 50 50;" text="Add">
          <font>
             <Font size="13.0" />
          </font>
@@ -85,19 +88,19 @@
       </HBox>
       <HBox layoutX="54.0" layoutY="421.0" prefHeight="27.0" prefWidth="417.0" spacing="6.0">
          <children>
-            <ChoiceBox fx:id="schedular" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8;" />
-            <ChoiceBox fx:id="modeBox" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8;" />
-            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetState" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="Reset">
+            <ChoiceBox fx:id="schedular" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
+            <ChoiceBox fx:id="modeBox" prefHeight="27.0" prefWidth="81.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
+            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetState" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 30 30 30 30;" text="Reset">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Button fx:id="removeBtn" mnemonicParsing="false" onAction="#removeProcess" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="Remove">
+            <Button fx:id="removeBtn" mnemonicParsing="false" onAction="#removeProcess" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 30  30 30;" text="Remove">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <Button fx:id="simulateBtn" mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee;" text="simulate">
+            <Button fx:id="simulateBtn" mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 30 30 30 30;" text="simulate">
                <font>
                   <Font size="13.0" />
                </font>

@@ -17,6 +17,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -365,6 +367,7 @@ public class Controller implements Initializable {
                         if (color == null || empty) {
                             setBackground(Background.EMPTY);
                             setStyle("");
+                            //setStyle("-fx-background-color: #1d3557;");
                         } else {
                             setBackground(Background.EMPTY);
                             setStyle(String.format("-fx-background-color:#%h;",color));
@@ -373,13 +376,19 @@ public class Controller implements Initializable {
                 };
             }
         });
+        //+"-fx-border-color:#0488bf;"
         remCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("RemainingTime"));
+        remCol.setStyle("-fx-alignment:center;");
         arrivalCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Arrival"));
+        arrivalCol.setStyle("-fx-alignment:center;");
         processCol.setCellValueFactory(new PropertyValueFactory<Process,String>("Name"));
+        processCol.setStyle("-fx-alignment:center;");
         cpuBurstCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("CpuBurst"));
+        cpuBurstCol.setStyle("-fx-alignment:center;");
         priorityCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Priority"));
+        priorityCol.setStyle("-fx-alignment:center;");
         processTable.setItems(processes);
-
+        processTable.setBorder(Border.stroke(Color.TRANSPARENT));
         /////////////////Schedular Choice Box////////////////////////
         schedular.setValue(SCHEDULAR_DEFAULT);
         modeBox.setValue(MODE_DEFAULT);
