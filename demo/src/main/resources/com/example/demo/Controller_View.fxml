@@ -68,7 +68,7 @@
                   <Font size="15.0" />
                </font>
             </Button>
-            <Button fx:id="simulateBtn" layoutX="109.0" layoutY="456.0" mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 30 30 30 30;" text="simulate">
+            <Button fx:id="simulateBtn" layoutX="109.0" layoutY="456.0" mnemonicParsing="false" onAction="#showChart" prefHeight="27.0" prefWidth="85.0" style="-fx-background-color: #ff7518; -fx-text-fill: #f1faee; -fx-background-radius: 30 30 30 30;" text="simulate">
                <font>
                   <Font size="15.0" />
                </font>

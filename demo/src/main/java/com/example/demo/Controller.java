@@ -384,7 +384,6 @@ public class Controller implements Initializable {
         playView.setFitHeight(50);
         playView.setPreserveRatio(true);
         stopBtn.setGraphic(playView);
-        simulateBtn.setDisable(true);
         if(processes!=null) processes.clear();
         schedular.setValue(SCHEDULAR_DEFAULT);
         modeBox.setValue(MODE_DEFAULT);
@@ -411,6 +410,7 @@ public class Controller implements Initializable {
         avgtTurnaroundTimeLbl.setText("");
         avgWaitTimeLbl.setText("");
         stopState = true;
+        simulateBtn.setDisable(true);
     }
 
     @FXML
