@@ -33,8 +33,8 @@ public class SJF_Preemptive {
 
             for (int i = 0; i < processes.size(); i++) {
                 if (processes.get(i).getArrival() <= current_time) {
-                    if (shortest_CpuBurst > processes.get(i).getCpuBurst()) {
-                        shortest_CpuBurst = processes.get(i).getCpuBurst();
+                    if (shortest_CpuBurst > processes.get(i).getRemainingTime()) {
+                        shortest_CpuBurst = processes.get(i).getRemainingTime();
                         CpuBurst_index = i;
                     }
                 } else {

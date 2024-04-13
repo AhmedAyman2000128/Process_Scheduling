@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
@@ -474,6 +475,7 @@ public class Controller implements Initializable {
                 };
             }
         });
+
         remCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("RemainingTime"));
         remCol.setStyle("-fx-alignment:center;");
         arrivalCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Arrival"));
