@@ -87,6 +87,10 @@ public class Controller implements Initializable {
     private Button stopBtn;
     @FXML
     private Button continueBtn;
+    @FXML
+    private Label avgWaitTimeLbl;
+    @FXML
+    private Label avgtTurnaroundTimeLbl;
     static int k = 0;// for timeline
     // Indicate whether adding processes while running or at the beginning
     boolean liveFlag = false;
@@ -129,6 +133,8 @@ public class Controller implements Initializable {
             float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
             System.out.println("Average Turnaround : "+averageTurnAround);
             System.out.println("Average Waiting Time :"+averageWaiting);
+            avgWaitTimeLbl.setText(averageWaiting+"");
+            avgtTurnaroundTimeLbl.setText(averageTurnAround+"");
             XYChart.Series<String, Double> series1 = new XYChart.Series<String, Double>();
             chart.getData().add(series1);
             if(modeBox.getValue().equals(mode.Live.toString())) {
@@ -350,6 +356,7 @@ public class Controller implements Initializable {
             case "Round_Robin":
                 enableAll();
                 priorityText.setDisable(true);
+                quantumText.setDisable(true);
                 break;
         }
     }
@@ -388,6 +395,8 @@ public class Controller implements Initializable {
         stopBtn.setDisable(true);
         continueBtn.setDisable(true);
         removeBtn.setDisable(false);
+        avgtTurnaroundTimeLbl.setText("");
+        avgWaitTimeLbl.setText("");
     }
 
     @FXML
