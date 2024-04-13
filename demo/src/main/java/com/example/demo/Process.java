@@ -14,6 +14,7 @@ public class Process implements Cloneable{
     private int arrival;
     private int remainingTime;
     private int completionTime;
+    private double roundRobinArivalTime;
 
     public Process(String name,int arrival,int cpuBurst,int priority,Color color){
         this.name = name;
@@ -21,8 +22,9 @@ public class Process implements Cloneable{
         this.priority = priority;
         this.color = color;
         this.arrival = arrival;
-        remainingTime = cpuBurst;
-        completionTime=0;
+        this.remainingTime = cpuBurst;
+        this.completionTime=0;
+        this.roundRobinArivalTime=arrival;
     }
 
     public int getArrival() {return arrival;}
@@ -36,9 +38,11 @@ public class Process implements Cloneable{
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
     public int getCpuBurst() {return cpuBurst;}
+    public void setCpuBurst(int cpuBurst) {this.cpuBurst = cpuBurst;}
     public int getCompletionTime() {return completionTime;}
     public void setCompletionTime(int completionTime) {this.completionTime= completionTime;}
-    public void setCpuBurst(int cpuBurst) {this.cpuBurst = cpuBurst;}
+    public double getRoundRobinArivalTime() {return roundRobinArivalTime;}
+    public void setRoundRobinArivalTime(double roundRobinArivalTime) {this.roundRobinArivalTime= roundRobinArivalTime;}
     private static void getWaitingTime(Vector<Pair<String,Integer>>gantt,ObservableList<Process>processes){
         int completion_time=0;
         for(int i=0;i<gantt.size();i++)

@@ -19,7 +19,61 @@ public class RoundRobin {
                 }
             }
         }
+
         Vector<Pair<String, Integer>> last = new Vector<>();
+
+
+        int current_time=0;
+        while(processes.size()>0)
+        {
+            for(int i=0;i<processes.size();i++)
+            {
+                double min_roundRobinArrival=100000;
+                int min_roundRobinArrival_index=-1;
+                double current_time2=current_time+0.1;
+                for(int j=0;j<processes.size();j++)
+                {
+                    if(min_roundRobinArrival>processes.get(j).getRoundRobinArivalTime()&&current_time2>=processes.get(j).getRoundRobinArivalTime())
+                    {
+                        min_roundRobinArrival=processes.get(j).getRoundRobinArivalTime();
+                        min_roundRobinArrival_index=j;
+                    }
+                }
+
+                if(min_roundRobinArrival_index==-1)
+                {
+                    Pair<String,Integer>pairToAdd = new Pair<>("empty", 1);
+                    last.add(pairToAdd);
+                    current_time++;
+                }
+
+
+                else if(processes.get(min_roundRobinArrival_index).getRemainingTime()>=timeQuantum)
+                {
+                    processes.get(min_roundRobinArrival_index).setRemainingTime(processes.get(min_roundRobinArrival_index).getRemainingTime()-timeQuantum);
+                    current_time+=timeQuantum;
+                    Pair<String,Integer>pairToAdd = new Pair<>(processes.get(min_roundRobinArrival_index).getName(), timeQuantum);
+                    last.add(pairToAdd);
+                    processes.get(min_roundRobinArrival_index).setRoundRobinArivalTime(current_time+0.1);
+                    if(processes.get(min_roundRobinArrival_index).getRemainingTime()==0)
+                    {
+                        processes.remove(min_roundRobinArrival_index);
+                    }
+                }
+                else
+                {
+                    current_time+=processes.get(min_roundRobinArrival_index).getRemainingTime();
+                    Pair<String,Integer>pairToAdd = new Pair<>(processes.get(min_roundRobinArrival_index).getName(), processes.get(min_roundRobinArrival_index).getRemainingTime());
+                    last.add(pairToAdd);
+                    processes.get(min_roundRobinArrival_index).setRoundRobinArivalTime(current_time+0.1);
+                    processes.remove(min_roundRobinArrival_index);
+
+                }
+            }
+        }
+
+
+        /*
         Queue<Process> readyQueue = new LinkedList<>();
         int currentTime = 0;
 
@@ -49,6 +103,8 @@ public class RoundRobin {
                 currentTime += gap;
             }
         }
+
+         */
         return last;
     }
 }

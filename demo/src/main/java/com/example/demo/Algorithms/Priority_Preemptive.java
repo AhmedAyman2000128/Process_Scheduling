@@ -10,13 +10,11 @@ public class Priority_Preemptive {
     public static Vector<Pair<String,Integer>> getganttChart(ObservableList<Process> processes){
 
         Vector<Pair<String,Integer>>last = new Vector<>();
-
         int total_time=0;
         for(int i=0;i<processes.size();i++)
         {
             total_time+= processes.get(i).getCpuBurst();
         }
-
         for(int i=0;i<processes.size();i++){
             for(int j=0;j<processes.size()-1;j++){
                 if(processes.get(j).getArrival()>processes.get(j+1).getArrival()){
@@ -26,8 +24,6 @@ public class Priority_Preemptive {
                 }
             }
         }
-
-
         int current_time=0;
         while (current_time<total_time)
         {
@@ -68,43 +64,7 @@ public class Priority_Preemptive {
                     processes.remove(max_priority_index);
                 }
             }
-
-
         }
         return last;
-        /*
-        Vector<Pair<String,Integer>>last2 = new Vector<>();
-        for(int i=0;i<last.size();i++)
-        {
-            int sum=1;
-            String process_name = last.get(i).getKey();
-            while (true)
-            {
-                if(i+1>=last.size())
-                {
-                    break;
-                }
-                if(last.get(i).getKey().equals(last.get(i+1).getKey()))
-                {
-                    sum++;
-                    i++;
-
-                }
-                else
-                {
-                    break;
-                }
-
-
-            }
-            Pair<String, Integer> pairToAdd = new Pair<>(process_name, sum);
-            last2.add(pairToAdd);
-
-        }
-
-
-        return last2;
-        */
-
     }
 }

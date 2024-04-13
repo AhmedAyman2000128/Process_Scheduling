@@ -96,8 +96,6 @@ public class Controller implements Initializable {
     private Vector<Pair<String,Integer>>readyProcesses;
     @FXML
     void showChart(ActionEvent event) {
-        //if(modeBox.getValue().equals(mode.Live.toString()))
-
         if(timeline!=null){
             timeline.stop();
         }
