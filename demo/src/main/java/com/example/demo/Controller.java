@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
@@ -20,12 +19,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.shape.Line;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
+import javafx.util.StringConverter;
+
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Controller implements Initializable {
@@ -87,15 +88,15 @@ public class Controller implements Initializable {
     @FXML
     private TableView processTable;
     @FXML
+    private Line yLine;
+    @FXML
     private Button stopBtn;
-
     @FXML
     private Label avgWaitTimeLbl;
     @FXML
     private Label avgtTurnaroundTimeLbl;
     static boolean stopState;
     static int k = 0;// for timeline
-    // Indicate whether adding processes while running or at the beginning
     boolean liveFlag = false;
     private Integer timeQuantum = null;
     private static int processIndex = 0;
@@ -134,16 +135,14 @@ public class Controller implements Initializable {
             }
             float averageWaiting = Process.getAverageWaitingTime(readyProcesses,processes);
             float averageTurnAround = Process.getAverageTurnAroundTime(readyProcesses,processes);
-            System.out.println("Average Turnaround : "+averageTurnAround);
-            System.out.println("Average Waiting Time :"+averageWaiting);
-            avgWaitTimeLbl.setText(averageWaiting+"");
-            avgtTurnaroundTimeLbl.setText(averageTurnAround+"");
+            DecimalFormat df = new DecimalFormat("#0.00");
+            avgWaitTimeLbl.setText(df.format(averageWaiting));
+            avgtTurnaroundTimeLbl.setText(df.format(averageTurnAround));
             XYChart.Series<String, Double> series1 = new XYChart.Series<String, Double>();
             chart.getData().add(series1);
             if(modeBox.getValue().equals(mode.Live.toString())) {
                 stopBtn.setDisable(false);
                 liveFlag = true;
-                //ersm el chart mn el 2wl
                 int k = running_time;
                 while (k > 0) {
                     if (k >= readyProcesses.getFirst().getValue()) {
@@ -160,7 +159,7 @@ public class Controller implements Initializable {
                 keyFrame = new KeyFrame(Duration.seconds(1), e -> {
                     running_time++;
                     Color color = null;
-                    boolean me = false;//in case of remaining time =0 m3na kda enha etrsmt
+                    boolean me = false;
                     for (int i = 0; i < processes.size(); i++) {
                         if (processes.get(i).getName().equals(readyProcesses.getFirst().getKey())) {
                             if (processes.get(i).getRemainingTime() == 0) {
@@ -191,18 +190,19 @@ public class Controller implements Initializable {
                             disableAll();
                             addBtn.setDisable(true);
                             stopBtn.setDisable(true);
+                            chart.setHorizontalGridLinesVisible(true);
+                            yLine.setVisible(true);
                             if(timeline!=null)timeline.stop();
                         }
                     }
                 });
-                // Create a Timeline and add the KeyFrame
                 timeline = new Timeline(keyFrame);
-                // Set the cycle count to 1 (play the timeline once)
                 timeline.setCycleCount(Timeline.INDEFINITE);
-                // Start the timeline
                 if(timeline!=null)timeline.play();
             }
             else if(modeBox.getValue().equals(mode.Static.toString())){
+                chart.setHorizontalGridLinesVisible(true);
+                yLine.setVisible(true);
                 disableAll();
                 for(int i=0;i<readyProcesses.size();i++){
                     XYChart.Data<String, Double> data = new XYChart.Data<String, Double>("Os", (double)readyProcesses.get(i).getValue());//
@@ -236,7 +236,6 @@ public class Controller implements Initializable {
     @FXML
     void addProcess(ActionEvent event) {
         String schedularValue = schedular.getValue().toString();
-        boolean okFlag = true;
         if (schedularValue.equals(SCHEDULAR_DEFAULT)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "please choose Scheduling Algorithm");
             alert.setTitle("Error");
@@ -249,24 +248,16 @@ public class Controller implements Initializable {
         }
         else {
             Alert alert1 = new Alert(Alert.AlertType.INFORMATION, "you cannot enter past Arrival Time");
-            alert1.setOnCloseRequest(e -> {
-                ///if(timeline!=null)timeline.play();
-            });
             Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "please fill all the textFields");
             alert2.setTitle("Incomplete Input");
-            alert2.setOnCloseRequest(e->{
-                //if(timeline!=null)timeline.play();
-            });
             if (schedularValue.equals(schedularAlgorithm.FCFS.toString())
                     || schedularValue.equals(schedularAlgorithm.SJF_Preemptive.toString())
                     || schedularValue.equals(schedularAlgorithm.SJF_NonPreemptive.toString())) {
                 if (!isValidInputForFCFS_SJF()) {
-                    okFlag = false;
                     if(timeline!=null)timeline.stop();
                     alert2.show();
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
-                        okFlag = false;
                         if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
@@ -279,12 +270,10 @@ public class Controller implements Initializable {
             } else if (schedularValue.equals(schedularAlgorithm.Priority_Preemptive.toString())
                     || schedularValue.equals(schedularAlgorithm.Priority_NonPreemptive.toString())) {
                 if (!isValidInputForPriority()) {
-                    okFlag = false;
                     if(timeline!=null)timeline.stop();
                     alert2.show();
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
-                        okFlag = false;
                         if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
@@ -297,12 +286,10 @@ public class Controller implements Initializable {
             } else {//Round Robin
                 String s = quantumText.getText();
                 if (!isValidInputForRoundRobin() || s.isEmpty()) {
-                    okFlag = false;
                     if(timeline!=null)timeline.stop();
                     alert2.show();
                 } else {
                     if (Integer.parseInt(arrivalText.getText()) < running_time) {
-                        okFlag = false;
                         if(timeline!=null)timeline.stop();
                         alert1.show();
                     }
@@ -313,11 +300,6 @@ public class Controller implements Initializable {
                         processIndex++;
                         processTable.refresh();
                     }
-                }
-            }
-            if(okFlag) {
-                if (liveFlag && Integer.parseInt(arrivalText.getText()) >= running_time) {
-
                 }
             }
         }
@@ -380,6 +362,7 @@ public class Controller implements Initializable {
 
     @FXML
     void resetState(ActionEvent event) {
+        chart.setHorizontalGridLinesVisible(false);
         Image image = new Image(getClass().getResourceAsStream("/Photo/pause.png"));
         ImageView playView = new ImageView(image);
         playView.setFitHeight(50);
@@ -412,11 +395,13 @@ public class Controller implements Initializable {
         avgWaitTimeLbl.setText("");
         stopState = true;
         simulateBtn.setDisable(true);
+        yLine.setVisible(false);
     }
 
     @FXML
     void removeProcess(ActionEvent event) {
         Process selectedItem = (Process) processTable.getSelectionModel().getSelectedItem();
+        colors.addLast(selectedItem.getColor());
         if(selectedItem == null){
             Alert alert = new Alert(Alert.AlertType.INFORMATION,"You have to select item from the Table !");
             alert.setTitle("Wrong Operation");
@@ -430,7 +415,12 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        yLine.setVisible(false);
+        chart.setHorizontalGridLinesVisible(false);
         stopState = true;
+        ////////////////////////////////////////////////////////Buttons Initialize////////////////////////////////////////////////////////
+        simulateBtn.setDisable(true);
+        stopBtn.setDisable(true);
         Image image = new Image(getClass().getResourceAsStream("/Photo/pause.png"));
         ImageView view = new ImageView(image);
         view.setFitHeight(50);
@@ -441,8 +431,12 @@ public class Controller implements Initializable {
         view.setFitHeight(40);
         view.setPreserveRatio(true);
         addBtn.setGraphic(view);
+        ////////////////////////////////////////////////////////Chart Styling////////////////////////////////////////////////////////////
         chart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         chart.setCategoryGap(100);
+        ////////////////////////////////////////////////////////TextBox Disable//////////////////////////////////////////////////////////
+        disableAll();
+        ////////////////////////////////////////////////////////Colors Initialize////////////////////////////////////////////////////////
         colors = new ArrayList<>();
         int count = 30;
         double goldenRatioConjugate = 0.618033988749895;
@@ -454,7 +448,6 @@ public class Controller implements Initializable {
         }
         colors = colors.reversed();
         processes = FXCollections.observableArrayList();
-        //set the colors of the cells
         colorCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getColor()));
         colorCol.setCellFactory(new Callback<>() {
             @Override
@@ -475,7 +468,7 @@ public class Controller implements Initializable {
                 };
             }
         });
-
+        ////////////////////////////////////////////////////////Columns Initialize////////////////////////////////////////////////////////
         remCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("RemainingTime"));
         remCol.setStyle("-fx-alignment:center;");
         arrivalCol.setCellValueFactory(new PropertyValueFactory<Process,Integer>("Arrival"));
@@ -488,13 +481,8 @@ public class Controller implements Initializable {
         priorityCol.setStyle("-fx-alignment:center;");
         processTable.setItems(processes);
         processTable.setBorder(Border.stroke(Color.TRANSPARENT));
-        /////////////////Schedular Choice Box////////////////////////
+        ////////////////////////////////////////////////////////Schedular Choice Box//////////////////////////////////////////////////////
         schedular.setValue(SCHEDULAR_DEFAULT);
-        modeBox.setValue(MODE_DEFAULT);
-        modeBox.setDisable(true);
-        simulateBtn.setDisable(true);
-        stopBtn.setDisable(true);
-        disableAll();
         schedular.getItems().addAll(
                 schedularAlgorithm.FCFS.toString(),
                 schedularAlgorithm.SJF_Preemptive.toString(),
@@ -510,6 +498,9 @@ public class Controller implements Initializable {
             modeBox.setDisable(false);
             schedular.setDisable(true);
         });
+        ////////////////////////////////////////////////////////Mode Initialize//////////////////////////////////////////////////////////
+        modeBox.setValue(MODE_DEFAULT);
+        modeBox.setDisable(true);
         modeBox.setOnAction(e->{
             String algo = schedular.getValue().toString();
             switch (algo){
@@ -576,6 +567,5 @@ public class Controller implements Initializable {
         cpuBurstText.clear();
         arrivalText.clear();
         priorityText.clear();
-        //quantumText.clear();
     }
 }

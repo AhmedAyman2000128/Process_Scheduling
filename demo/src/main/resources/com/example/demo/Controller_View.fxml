@@ -14,11 +14,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="526.0" prefWidth="693.0" style="-fx-background-color: #202f47;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="526.0" prefWidth="713.0" style="-fx-background-color: #202f47;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.Controller">
    <children>
-      <StackedBarChart fx:id="chart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" layoutX="355.0" layoutY="-167.0" legendVisible="false" prefHeight="448.0" prefWidth="166.0" rotate="90.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+      <StackedBarChart fx:id="chart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" layoutX="363.0" layoutY="-155.0" legendVisible="false" prefHeight="437.0" prefWidth="200.0" rotate="90.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
         <xAxis>
           <CategoryAxis fx:id="yAxis" opacity="0.0" side="BOTTOM" tickLabelFill="#e30909" tickLabelRotation="-90.0" tickLabelsVisible="false" />
         </xAxis>
@@ -26,7 +28,7 @@
           <NumberAxis minorTickVisible="false" side="RIGHT" style="-fx-tick-label-fill: #f1faee;" tickLabelRotation="-90.0" upperBound="10.0" fx:id="xAxis" />
         </yAxis>
       </StackedBarChart>
-      <TableView fx:id="processTable" layoutX="253.0" layoutY="164.0" prefHeight="200.0" prefWidth="417.0">
+      <TableView fx:id="processTable" layoutX="253.0" layoutY="164.0" prefHeight="200.0" prefWidth="432.0">
         <columns>
           <TableColumn fx:id="processCol" prefWidth="48.66668701171875" text="Process" />
             <TableColumn fx:id="arrivalCol" prefWidth="75.0" text="Arrival" />
@@ -39,30 +41,30 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Label alignment="CENTER" layoutX="428.0" layoutY="368.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee;" text="Average Waiting Time">
+      <Label alignment="CENTER" layoutX="447.0" layoutY="371.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee;" text="Average Waiting Time">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label alignment="CENTER" layoutX="246.0" layoutY="368.0" prefHeight="25.0" prefWidth="182.0" style="-fx-text-fill: #f1faee;" text="Average Turnaround">
+      <Label alignment="CENTER" layoutX="253.0" layoutY="371.0" prefHeight="25.0" prefWidth="182.0" style="-fx-text-fill: #f1faee;" text="Average Turnaround">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="avgWaitTimeLbl" alignment="CENTER" layoutX="428.0" layoutY="400.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee; -fx-background-radius: 10 10 10 10; -fx-background-color: #ff7518; -fx-alignment: center;">
+      <Label fx:id="avgWaitTimeLbl" alignment="CENTER" layoutX="447.0" layoutY="403.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee; -fx-background-radius: 10 10 10 10; -fx-background-color: #ff7518; -fx-alignment: center;">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Label fx:id="avgtTurnaroundTimeLbl" alignment="CENTER" layoutX="259.0" layoutY="400.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee; -fx-background-radius: 10 10 10 10; -fx-background-color: #ff7518; -fx-alignment: center;">
+      <Label fx:id="avgtTurnaroundTimeLbl" alignment="CENTER" layoutX="266.0" layoutY="403.0" prefHeight="25.0" prefWidth="155.0" style="-fx-text-fill: #f1faee; -fx-background-radius: 10 10 10 10; -fx-background-color: #ff7518; -fx-alignment: center;">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
       <AnchorPane layoutY="-1.0" prefHeight="526.0" prefWidth="214.0" style="-fx-background-color: #1d3557;">
          <children>
-            <ChoiceBox fx:id="schedular" layoutX="21.0" layoutY="272.0" prefHeight="27.0" prefWidth="175.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
-            <ChoiceBox fx:id="modeBox" layoutX="21.0" layoutY="365.0" prefHeight="27.0" prefWidth="175.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
+            <ChoiceBox fx:id="schedular" layoutX="21.0" layoutY="283.0" prefHeight="25.0" prefWidth="175.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
+            <ChoiceBox fx:id="modeBox" layoutX="21.0" layoutY="376.0" prefHeight="25.0" prefWidth="175.0" style="-fx-background-color: #00A8a8; -fx-background-radius: 30 30 30 30; -fx-text-fill: white;" />
             <Button fx:id="resetBtn" layoutX="20.0" layoutY="456.0" mnemonicParsing="false" onAction="#resetState" prefHeight="27.0" prefWidth="82.0" style="-fx-background-color: #00A8a8; -fx-text-fill: #f1faee; -fx-background-radius: 30 30 30 30;" text="Reset">
                <font>
                   <Font size="15.0" />
@@ -78,16 +80,26 @@
                   <Image url="@../../../Photo/schedule.jpg" />
                </image>
             </ImageView>
+            <Label alignment="CENTER" layoutX="18.0" layoutY="254.0" prefHeight="25.0" prefWidth="182.0" style="-fx-text-fill: #f1faee;" text="Algorithm">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="18.0" layoutY="347.0" prefHeight="25.0" prefWidth="182.0" style="-fx-text-fill: #f1faee;" text="Mode">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="214.0" layoutY="440.0" prefHeight="86.0" prefWidth="479.0" style="-fx-background-color: #2a3f62;">
+      <AnchorPane layoutX="214.0" layoutY="440.0" prefHeight="86.0" prefWidth="500.0" style="-fx-background-color: #2a3f62;">
          <children>
-            <Button fx:id="addBtn" layoutX="409.0" layoutY="23.0" mnemonicParsing="false" onAction="#addProcess" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #2a3f62; -fx-text-fill: #f1faee; -fx-background-radius: 50 50 50 50;">
+            <Button fx:id="addBtn" layoutX="437.0" layoutY="24.0" mnemonicParsing="false" onAction="#addProcess" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #2a3f62; -fx-text-fill: #f1faee; -fx-background-radius: 50 50 50 50;">
                <font>
                   <Font size="13.0" />
                </font>
             </Button>
-            <HBox layoutX="12.0" layoutY="18.0" prefHeight="50.0" prefWidth="386.0" spacing="10.0">
+            <HBox layoutX="14.0" layoutY="18.0" prefHeight="50.0" prefWidth="423.0" spacing="7.0">
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
@@ -138,10 +150,14 @@
             <Font size="13.0" />
          </font>
       </Button>
-      <Button fx:id="stopBtn" layoutX="607.0" layoutY="375.0" mnemonicParsing="false" onAction="#simulationStop" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #202f47; -fx-text-fill: #f1faee; -fx-background-radius: 10 10 0 0;">
+      <Button fx:id="stopBtn" layoutX="629.0" layoutY="378.0" mnemonicParsing="false" onAction="#simulationStop" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #202f47; -fx-text-fill: #f1faee; -fx-background-radius: 10 10 0 0;">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff" height="146.0" layoutX="253.0" layoutY="7.0" stroke="BLACK" strokeType="INSIDE" style="-fx-fill: transparent; -fx-stroke-width: 2; -fx-stroke: #ff7518; -fx-arc-width: 15; -fx-arc-height: 15; -fx-effect: dropshadow(three-pass-box, #490648, 30, 0, 0, 0);" width="432.0" />
+      <AnchorPane layoutX="225.0" prefHeight="6.6" prefWidth="450.0" style="-fx-background-color: #202f47;" />
+      <Line fx:id="yLine" endX="29.999969482421875" endY="28.333328247070312" layoutX="240.0" layoutY="96.0" startX="29.999969482421875" startY="-85.6" stroke="#bcbcbc" style="-fx-stroke-width: 1;" />
+      <AnchorPane layoutX="265.0" layoutY="9.0" prefHeight="7.0" prefWidth="407.0" style="-fx-background-color: #202f47;" />
    </children>
 </AnchorPane>
